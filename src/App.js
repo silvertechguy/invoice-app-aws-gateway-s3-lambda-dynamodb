@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { Table, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -11,7 +11,7 @@ import {
 
 const invoicesComponent = (invoices, remove) =>
   invoices.map(invoice => (
-    <tr key={invoice.id}>
+    <tr key={invoice.Id}>
       <td>{invoice.Vendor}</td>
       <td>{invoice.Amount}</td>
       <td>{invoice.invoice}</td>
@@ -19,7 +19,7 @@ const invoicesComponent = (invoices, remove) =>
       <td>
         <Button
           className="btn btn-lg btn-success"
-          onClick={() => remove(invoice.id)}
+          onClick={() => remove(invoice.Id)}
         >
           <FontAwesomeIcon icon={faThumbsUp} /> OK
         </Button>
@@ -27,7 +27,7 @@ const invoicesComponent = (invoices, remove) =>
       <td>
         <Button
           className="btn btn-lg btn-danger"
-          onClick={() => remove(invoice.id)}
+          onClick={() => remove(invoice.Id)}
         >
           <FontAwesomeIcon icon={faThumbsDown} /> NOK
         </Button>
@@ -35,7 +35,7 @@ const invoicesComponent = (invoices, remove) =>
       <td>
         <Button
           className="btn btn-lg btn-info"
-          onClick={() => remove(invoice.id)}
+          onClick={() => remove(invoice.Id)}
         >
           <FontAwesomeIcon icon={faMoneyCheckAlt} /> 50%
         </Button>
@@ -43,7 +43,7 @@ const invoicesComponent = (invoices, remove) =>
       <td>
         <Button
           className="btn btn-lg btn-warning"
-          onClick={() => remove(invoice.id)}
+          onClick={() => remove(invoice.Id)}
         >
           <FontAwesomeIcon icon={faSearchDollar} /> ??
         </Button>
@@ -51,7 +51,7 @@ const invoicesComponent = (invoices, remove) =>
       <td>
         <Button
           className="btn btn-lg btn-info"
-          onClick={() => remove(invoice.id)}
+          onClick={() => remove(invoice.Id)}
         >
           <FontAwesomeIcon icon={faImage} /> Image
         </Button>
@@ -60,38 +60,32 @@ const invoicesComponent = (invoices, remove) =>
   ));
 
 function App() {
-  const [invoices, setInvoices] = useState([
-    {
-      id: '100',
-      Vendor: 'Hankook',
-      Amount: '$18,000',
-      invoice: '1123',
-      Date: '08/21/2019',
-    },
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-    {
-      id: '200',
-      Vendor: 'Hankook',
-      Amount: '$18,000',
-      invoice: '1123',
-      Date: '08/21/2019',
-    },
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      setLoading(true);
+      const response = await fetch(
+        'https://1n9r5vizt2.execute-api.eu-west-2.amazonaws.com/dev'
+      );
+      const body = await response.json();
+      console.log(body);
+      setInvoices(body);
+      setLoading(false);
+    };
+    fetchInvoices();
+    return () => {};
+  }, []);
 
-    {
-      id: '300',
-      Vendor: 'Hankook',
-      Amount: '$18,000',
-      invoice: '1123',
-      Date: '08/21/2019',
-    },
-  ]);
-
-  const remove = id => {
-    const updateedInvoices = [...invoices].filter(i => i.id !== id);
+  const remove = Id => {
+    const updateedInvoices = [...invoices].filter(i => i.Id !== Id);
     setInvoices(updateedInvoices);
   };
 
-  return (
+  return loading ? (
+    <div>Loading...</div>
+  ) : (
     <div className="container border border-secondary rouded center">
       <div className="row">
         <div className="col-12">
